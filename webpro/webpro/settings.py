@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'djangocms_frontend.contrib.navigation',
     'djangocms_frontend.contrib.tabs',
     'djangocms_frontend.contrib.utilities',
+    'crispy_forms',
 
 ]
 
@@ -90,10 +91,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
 ]
 
@@ -102,15 +103,12 @@ ROOT_URLCONF = 'webpro.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, "webpro", "templates"),
-        ],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.template.context_processors.i18n',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'sekizai.context_processors.sekizai',
@@ -166,7 +164,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en'
 
 LANGUAGES = [
-    ("en", _("English")),
+    ('en', 'English'),
     # Add additional languages here
 ]
 
@@ -201,9 +199,9 @@ SITE_ID = 1
 # A base template is part of this setup
 # https://docs.django-cms.org/en/release-4.1.x/reference/configuration.html#cms-templates
 
-CMS_TEMPLATES = (
-    ("base.html", _("Standard")),
-)
+CMS_TEMPLATES = [
+    ('home.html', 'Home page template'),
+]
 
 # Enable permissions
 # https://docs.django-cms.org/en/release-4.1.x/topics/permissions.html

@@ -1,34 +1,28 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group, Permission
-from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
-class User(AbstractUser):
-    class Role(models.TextChoices):
-        STUDENT = "STUDENT", _("Student")
-        EXPERT = "EXPERT", _("Expert")
-
-    role = models.CharField(
-        max_length=50,
-        choices=Role.choices,
-        default=Role.STUDENT,
+class UserProfile(models.Model):
+    USER_TYPE_CHOICES = (
+        ('student', 'Student'),
+        ('expert', 'Expert'),
     )
-
-    # Common fields for both Student and Expert
-    groups = models.ManyToManyField( Group, related_name="muser_groups")
-    user_permissions = models.ManyToManyField( Permission, related_name="muser_permissions")
+    
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES)
     bio = models.TextField(max_length=500, blank=True)
-    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pics', blank=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.user.username}'s profile - {self.user_type}"
 
-class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    programme = models.CharField(max_length=50, blank=True)
-    school = models.CharField(max_length=100, blank=True)
-    courses = models.CharField(max_length=200, blank=True)
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
 
-class Expert(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    programme_of_expertise = models.CharField(max_length=100)
-    years_of_experience = models.PositiveIntegerField(default=0)
-    courses = models.TextField(blank=True)
-    verified = models.BooleanField(default=False)
-    rating = models.DecimalField(max_digits=3, decimal_places=2, default=0)
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.userprofile.save()

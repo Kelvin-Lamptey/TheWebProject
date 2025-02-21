@@ -1,25 +1,23 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
-from django.contrib.auth.views import LoginView
-from django.views.generic import CreateView
-from django.urls import reverse_lazy
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
 from .forms import UserRegistrationForm
+from django.contrib import messages
 
-# Create your views here.
+def register(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Account created for {username}!')
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'profiles/register.html', {'form': form})
 
-class CustomLoginView(LoginView):
-    template_name = 'profiles/login.html'
-    redirect_authenticated_user = True
-    
-    def get_success_url(self):
-        return reverse_lazy('home')  # Change 'home' to your desired redirect URL
+@login_required
+def profile(request):
+    return render(request, 'profiles/profile.html')
 
-class RegisterView(CreateView):
-    form_class = UserRegistrationForm
-    template_name = 'profiles/register.html'
-    success_url = reverse_lazy('home')  # Change 'home' to your desired redirect URL
-
-    def form_valid(self, form):
-        user = form.save()
-        login(self.request, user)
-        return redirect(self.success_url)

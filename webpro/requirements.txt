@@ -1,0 +1,12 @@
+Django>=3.2,<4.0
+django-cms==3.10.1
+django-treebeard>=4.4,<5.0
+django-filer>=2.2,<3.0
+django-sekizai>=2.0,<3.0
+django-classy-tags>=3.0,<4.0
+django-crispy-forms==1.14.0
+crispy-bootstrap4==2022.1
+Pillow
+djangocms-admin-style>=3.2
+django-mptt>=0.13
+djangocms-frontend>=1.0.0 
